@@ -1,0 +1,14 @@
+[package]
+name = "wu-clib"
+version = "0.1.0"
+edition = "2021"
+links = "wu-clib"
+
+[dependencies]
+wasm-bindgen = "*"
+log = "*"
+
+[build-dependencies]
+bindgen = "*"
+cc = "*"
+simple_logger = "*"

@@ -1,0 +1,13 @@
+[package]
+name = "pr1"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wu-clib = { path = "../wu-clib" }
+wasm-bindgen = "*"
+web-sys = "*"
+easy-imgui-renderer = { path = "../../easy-imgui-rs/easy-imgui-renderer" }

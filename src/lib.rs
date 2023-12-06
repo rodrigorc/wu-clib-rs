@@ -1,3 +1,4 @@
+use wasm_bindgen::prelude::*;
 
 pub mod clib {
     #![allow(non_upper_case_globals)]
@@ -10,6 +11,25 @@ pub mod clib {
 
 use clib::*;
 
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = console, js_name = log)]
+    fn js_console_log(s: &str);
+}
+
+pub struct JsLog;
+
+impl log::Log for JsLog {
+    fn enabled(&self, _: &log::Metadata<'_>) -> bool { true }
+    fn flush(&self) { }
+    fn log(&self, record: &log::Record<'_>) {
+        js_console_log(&format!("{}:{} -- {}",
+            record.level(),
+            record.target(),
+            record.args()));
+
+    }
+}
 
 // Maximum alginment not less than usize
 const MALLOC_HEADER_SIZE: usize = 8;
@@ -64,23 +84,23 @@ pub unsafe extern "C" fn _calloc_r(re: *mut _reent, nmemb: usize, len: usize) ->
 
 // Wasm32 never exits
 #[no_mangle]
-pub unsafe extern "C" fn _exit(_: i32) {
-    log::debug!("_exit");
+pub unsafe extern "C" fn _exit(_e: i32) {
+    log::debug!("_exit({_e})");
 }
 #[no_mangle]
 pub unsafe extern "C" fn __cxa_atexit(_: i32, _: i32, _: i32) -> i32 {
-    log::debug!("_cxa_atexit");
+    log::debug!("_cxa_atexit()");
     0
 }
 #[no_mangle]
 pub unsafe extern "C" fn _read_r(re: *mut _reent, _fd: i32, _buf: *mut u8, _len: usize) -> isize {
-    log::debug!("_read");
+    log::debug!("_read({_fd}, , {_len})");
     (*re)._errno = EINVAL as _;
     -1
 }
 #[no_mangle]
 pub unsafe extern "C" fn _lseek_r(re: *mut _reent, _fd: i32, _offs: isize, _whence: i32) -> i32 {
-    log::debug!("_lseek");
+    log::debug!("_lseek({_fd}, {_offs}, {_whence})");
     (*re)._errno = ESPIPE as _;
     -1
 }
@@ -90,6 +110,7 @@ static mut STDERR: Vec<u8> = Vec::new();
 
 #[no_mangle]
 pub unsafe extern "C" fn _write_r(re: *mut _reent, fd: i32, buf: *const u8, len: usize) -> isize {
+    log::debug!("_write_r({fd}, , {len})");
     let mut s = std::slice::from_raw_parts(buf, len);
     let f = match fd {
         1 => &mut STDOUT,
@@ -121,36 +142,36 @@ pub unsafe extern "C" fn _write_r(re: *mut _reent, fd: i32, buf: *const u8, len:
 }
 #[no_mangle]
 pub unsafe extern "C" fn _close_r(_re: *mut _reent, _fd: i32) -> i32 {
-    log::debug!("_close");
+    log::debug!("_close({_fd})");
     0
 }
 #[no_mangle]
 pub unsafe extern "C" fn _isatty_r(re: *mut _reent, _fd: i32) -> i32 {
-    log::debug!("_isatty");
+    log::debug!("_isatty({_fd})");
     (*re)._errno = ENOTTY as _;
     0
 }
 #[no_mangle]
 pub unsafe extern "C" fn _fstat_r(re: *mut _reent, _fd: i32, _buf: i32) -> i32 {
-    log::debug!("_fstat {}", _fd);
+    log::debug!("_fstat({_fd})");
     (*re)._errno = EIO as _;
     -1
 }
 #[no_mangle]
 pub unsafe extern "C" fn _getpid_r(_re: *mut _reent) -> i32 {
-    log::debug!("_getpid");
+    log::debug!("_getpid()");
     // pid=1 is special but we are not so
     2
 }
 #[no_mangle]
 pub unsafe extern "C" fn _kill_r(re: *mut _reent, _pid: i32, _sig: i32) -> i32 {
-    log::debug!("_kill");
+    log::debug!("_kill({_pid}, {_sig})");
     (*re)._errno = EPERM as _;
     -1
 }
 #[no_mangle]
 pub unsafe extern "C" fn _open_r(re: *mut _reent, _path: *const u8, _flags: i32, _mode: i32) -> i32 {
-    log::debug!("_open");
+    log::debug!("_open(...)");
     (*re)._errno = ENOENT as _;
     -1
 }

@@ -6,7 +6,7 @@ fn main() {
     let mut cc = cc::Build::new();
     cc.flag("-Wno-unknown-pragmas");
     cc.flag("-Wno-deprecated-non-prototype");
-    cc.flag("-Wlogical-not-parentheses");
+    cc.flag("-Wno-logical-not-parentheses");
     //newlib defines this as "double __exp10(unsigned)" but there is a builtin "double __exp10(double)" somewhere...
     cc.define("__exp10", "__exp10_alt");
     let libc = [

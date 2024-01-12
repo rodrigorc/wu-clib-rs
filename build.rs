@@ -129,6 +129,8 @@ fn main() {
         "stdio/vsiprintf.c",
         "stdio/vsiscanf.c",
         "stdio/vsniprintf.c",
+        "stdio/sfputs_r.c",
+        "stdio/ssputs_r.c",
         "stdio/clearerr.c",
         "stdio/fclose.c",
         "stdio/fdopen.c",

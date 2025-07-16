@@ -112,6 +112,9 @@ static mut STDERR: Vec<u8> = Vec::new();
 pub unsafe extern "C" fn _write_r(re: *mut _reent, fd: i32, buf: *const u8, len: usize) -> isize {
     log::debug!("_write_r({fd}, , {len})");
     let mut s = std::slice::from_raw_parts(buf, len);
+
+    //Wasm is single threaded, so no harm here
+    #[allow(static_mut_refs)]
     let f = match fd {
         1 => &mut STDOUT,
         2 => &mut STDERR,

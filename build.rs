@@ -9,6 +9,8 @@ fn main() {
     cc.flag("-Wno-logical-not-parentheses");
     //newlib defines this as "double __exp10(unsigned)" but there is a builtin "double __exp10(double)" somewhere...
     cc.define("__exp10", "__exp10_alt");
+    // This enables some prototypes that many systems provide, but we don't have any.
+    cc.define("_LIBC", "1");
     let libc = [
         "search/qsort.c",
         "search/bsearch.c",
@@ -289,6 +291,12 @@ fn main() {
         "signal/sig2str.c",
 
         "reent/impure.c",
+        "reent/execr.c",
+
+        "syscalls/sysfork.c",
+
+        "posix/execvp.c",
+        "posix/execv.c",
 
         "../libm/common/sf_nan.c",
         "../libm/common/s_nan.c",

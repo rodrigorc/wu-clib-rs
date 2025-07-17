@@ -1,7 +1,9 @@
 #!/bin/bash
 DIR=$(dirname "$(realpath "$0")")
+WU_SYSROOT="$DIR/sysroot"
+
 SYSROOT="$DIR/newlib-cygwin/newlib/libc" \
-CFLAGS_wasm32_unknown_unknown="--sysroot=$SYSROOT -D__IEEE_LITTLE_ENDIAN -D__SINGLE_THREAD__ -DREENTRANT_SYSCALLS_PROVIDED" \
-BINDGEN_EXTRA_CLANG_ARGS_wasm32_unknown_unknown="-fvisibility=default $CFLAGS_wasm32_unknown_unknown" \
-RUSTFLAGS="-C link-args=$(clang -print-libgcc-file-name --target=wasm32-unknown-wasi)" \
-wasm-pack "$@"
+  CFLAGS_wasm32_unknown_unknown="-isystem $WU_SYSROOT/include --sysroot=$SYSROOT -D__IEEE_LITTLE_ENDIAN -D__SINGLE_THREAD__ -DREENTRANT_SYSCALLS_PROVIDED" \
+  BINDGEN_EXTRA_CLANG_ARGS_wasm32_unknown_unknown="-fvisibility=default $CFLAGS_wasm32_unknown_unknown" \
+  RUSTFLAGS="-C link-args=$(clang -print-libgcc-file-name --target=wasm32-unknown-wasi)" \
+  wasm-pack "$@"

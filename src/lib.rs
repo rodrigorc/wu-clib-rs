@@ -161,13 +161,13 @@ pub unsafe extern "C" fn _fstat_r(re: *mut _reent, _fd: i32, _buf: i32) -> i32 {
     -1
 }
 #[no_mangle]
-pub unsafe extern "C" fn _getpid_r(_re: *mut _reent) -> i32 {
+pub unsafe extern "C" fn _getpid_r(_re: *mut _reent) -> __pid_t {
     log::debug!("_getpid()");
     // pid=1 is special but we are not so
     2
 }
 #[no_mangle]
-pub unsafe extern "C" fn _kill_r(re: *mut _reent, _pid: i32, _sig: i32) -> i32 {
+pub unsafe extern "C" fn _kill_r(re: *mut _reent, _pid: __pid_t, _sig: i32) -> i32 {
     log::debug!("_kill({_pid}, {_sig})");
     (*re)._errno = EPERM as _;
     -1
@@ -178,3 +178,31 @@ pub unsafe extern "C" fn _open_r(re: *mut _reent, _path: *const u8, _flags: i32,
     (*re)._errno = ENOENT as _;
     -1
 }
+
+#[no_mangle]
+pub unsafe extern "C" fn _unlink_r(re: *mut _reent, _path: *const u8) -> i32 {
+    log::debug!("_unlink(...)");
+    (*re)._errno = ENOENT as _;
+    -1
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn waitpid(_: __pid_t, _: *const i32, _: i32) -> __pid_t {
+    // no _reent here, weirdly
+    //(*re)._errno = ECHILD as _;
+    -1
+}
+#[no_mangle]
+pub unsafe extern "C" fn _fork_r(re: *mut _reent) -> __pid_t {
+    log::debug!("_fork()");
+    (*re)._errno = EAGAIN as _;
+    -1
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn _execve(re: *mut _reent) -> i32 {
+    log::debug!("_execve()");
+    (*re)._errno = EAGAIN as _;
+    -1
+}
+
